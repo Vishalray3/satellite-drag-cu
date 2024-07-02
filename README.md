@@ -1,2 +1,2 @@
-# satellite-drag-modeling
+# satellite-drag-cu
 Atmospheric drag modeling work
