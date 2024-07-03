@@ -1,0 +1,10 @@
+# Follow the steps below to create a GEODYN IIE executable (giie1911)
+# The file COMMON_DECL.inc must be present when compiling the code
+fsplit <g2efile.f90
+ifort -O3 -c -i8 mssgfc_mod.f90
+ifort  -c -i8 -FR tragen_utils_module.f90
+ifort  -c -i8 -FR vmf_module.f90
+ifort  -c -i8 -FR antphc_module.f90
+ifort  -c -i8 -FR cgmass_module.f90
+ifort -O3 -c -i8 -FR *.f90
+ifort -o giie1911 *.o -llapack
