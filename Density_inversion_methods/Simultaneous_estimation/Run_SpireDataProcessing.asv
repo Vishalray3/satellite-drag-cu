@@ -3,7 +3,14 @@ clc
 clearvars
 tic
 restoredefaultpath
-addpath('/Users/vishalray/GoogleDrive/Vishal/PhD/Simulations/Main_working_folder/Density_inversion_methods/data/HASDM_data')
+linux = 1;
+if linux == 1
+    parent_directory = '/home/vira0155';
+else
+    parent_directory = '/Users/vishalray/GoogleDrive/Vishal/PhD/Simulations/Main_working_folder';
+end
+
+addpath(fullfile(parent_directory, 'satellite-drag-cu/Density_inversion_methods/data/HASDM_data'))
 %% Things to be kept in mind
 % datafile name : starlink_satellite_data_id_date,
 % spire_satellite_data_id_date

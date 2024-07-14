@@ -3,15 +3,22 @@
 restoredefaultpath
 flag_disp = 0;
 % dataset_sat = 'simulation';
+
+% linux = 0;
+if linux_os == 1
+    parent_directory = '/home/vira0155';
+else
+    parent_directory = '/Users/vishalray/GoogleDrive/Vishal/PhD/Simulations/Main_working_folder';
+end
 %% Add path to folders
-addpath('/Users/vishalray/GoogleDrive/Vishal/PhD/DataTools/mice/mice/src/mice/')
-addpath('/Users/vishalray/GoogleDrive/Vishal/PhD/DataTools/mice/mice/lib/' )
-addpath('/Users/vishalray/GoogleDrive/Vishal/PhD/Simulations/Main_working_folder/JB08')
-addpath('/Users/vishalray/GoogleDrive/Vishal/PhD/Simulations/Main_working_folder/Density_inversion_methods')
-addpath('/Users/vishalray/GoogleDrive/Vishal/PhD/Simulations/Main_working_folder/Density_inversion_methods/data/ancillary_data')
-addpath('/Users/vishalray/GoogleDrive/Vishal/PhD/Simulations/Main_working_folder/Density_inversion_methods/data/HASDM_data')
-addpath('/Users/vishalray/GoogleDrive/Vishal/PhD/Simulations/Main_working_folder/PosVelTransformations')
-addpath('/Users/vishalray/GoogleDrive/Vishal/PhD/Simulations/Main_working_folder/Density_inversion_methods/data/erp_data')
+addpath(fullfile(parent_directory, 'mice/mice/src/mice/'))
+addpath(fullfile(parent_directory, 'mice/mice/lib/'))
+addpath(fullfile(parent_directory, 'satellite-drag-cu/JB08'))
+addpath(fullfile(parent_directory, 'satellite-drag-cu/Density_inversion_methods'))
+addpath(fullfile(parent_directory, 'satellite-drag-cu/Density_inversion_methods/data/ancillary_data'))
+addpath(fullfile(parent_directory, 'satellite-drag-cu/Density_inversion_methods/data/HASDM_data'))
+addpath(fullfile(parent_directory, 'satellite-drag-cu/PosVelTransformations'))
+addpath(fullfile(parent_directory, 'satellite-drag-cu/Density_inversion_methods/data/erp_data'))
 % 
 % addpath('/home/vira0155/DataTools/mice/mice/src/mice/')
 % addpath('/home/vira0155/DataTools/mice/mice/lib/' )

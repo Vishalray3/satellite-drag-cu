@@ -3,7 +3,14 @@ clc
 clearvars
 tic
 restoredefaultpath
-addpath('/Users/vishalray/GoogleDrive/Vishal/PhD/Simulations/Main_working_folder/Density_inversion_methods/data/HASDM_data')
+linux_os = 0;
+if linux_os == 1
+    parent_directory = '/home/vira0155';
+else
+    parent_directory = '/Users/vishalray/GoogleDrive/Vishal/PhD/Simulations/Main_working_folder';
+end
+
+addpath(fullfile(parent_directory, 'satellite-drag-cu/Density_inversion_methods/data/HASDM_data'))
 %% Things to be kept in mind
 % datafile name : starlink_satellite_data_id_date,
 % spire_satellite_data_id_date
@@ -28,10 +35,12 @@ hasdm_mat = hasdm_initialize(n_days, doy_hasdm, hasdm_models);   % hasdm sub-mat
 %% Point to the data directory and download the data
 date_curr = strcat(year_data,'_',month_data,'_',day_data{1});
 % dir_data = (strcat('/Users/vishalray/GoogleDrive/Vishal/PhD/Simulations/main_working_folder_data/spire/2022_02_05', data_pod));
-dir_data = (strcat('/Users/vishalray/GoogleDrive/Vishal/PhD/Simulations/Main_working_folder/Density_inversion_methods/Simultaneous_estimation', data_pod));
+dir_data = (strcat(fullfile(parent_directory, 'satellite-drag-cu/Density_inversion_methods/Simultaneous_estimation'), data_pod));
 dir_struct = dir(dir_data);
 dir_name = {dir_struct.name};
-dir_name = dir_name(contains(dir_name, 'satellite_data_'));
+data_pattern = "spire_satellite_data_FM" + digitsPattern(3) + '_' + digitsPattern(4) + '_' + digitsPattern(2) + '_' + digitsPattern(2) + '.mat';
+
+dir_name = dir_name(matches(dir_name, data_pattern));
 sat_ID_mat = extractBetween(dir_name, strcat('data', data_pod, '_'),  strcat('_', year_data)); % {'FM103'}; %
 dataset_sat_mat = extractBefore(dir_name, '_satellite');
 
@@ -39,10 +48,10 @@ for ii = 1:numel(sat_ID_mat)
     ii
     sat_ID = sat_ID_mat{ii};
     dataset_sat = dataset_sat_mat{ii};
-    run_ODcode(dir_data, sat_ID, date_curr, flag_rho, dataset_sat, hasdm_mat, erp_ceres_datafile, data_pod, case_run, del_T);
+    run_ODcode(dir_data, sat_ID, date_curr, flag_rho, dataset_sat, hasdm_mat, erp_ceres_datafile, data_pod, case_run, del_T, linux_os);
 end
 toc
 
-function [] = run_ODcode(dir_data,sat_ID, date_curr, flag_rho, dataset_sat, hasdm_mat, erp_ceres_datafile, data_pod, case_run, del_T)
+function [] = run_ODcode(dir_data,sat_ID, date_curr, flag_rho, dataset_sat, hasdm_mat, erp_ceres_datafile, data_pod, case_run, del_T, linux_os)
 Main_simulStudy
 end
