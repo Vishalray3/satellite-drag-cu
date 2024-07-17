@@ -9,7 +9,7 @@ clc
 clearvars
 restoredefaultpath
 
-linux_os = 0;
+linux_os = 1;
 if linux_os == 1
     parent_directory = '/home/vira0155';
     dir_sp3_q = '/media/faraday/DATA/thermospheric/spire_data/2022/spire';
@@ -50,7 +50,8 @@ eqeterms = 1;
 
 %% Run data loop
 
-for mon_sat = mon_sat_array
+parfor mon_sat = mon_sat_array
+    mon_sat
     day_sat_array = [1:eomday(yyyy_sat, mon_sat)];
     for day_sat = day_sat_array
         day_sat
