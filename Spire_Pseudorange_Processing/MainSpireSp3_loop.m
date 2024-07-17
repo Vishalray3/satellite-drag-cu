@@ -13,9 +13,11 @@ linux_os = 0;
 if linux_os == 1
     parent_directory = '/home/vira0155';
     dir_sp3_q = '/media/faraday/DATA/thermospheric/spire_data/2022/spire';
+    output_dir = '/media/faraday/DATA/thermospheric/spire_data/2022/spire_matlab';
 else
     parent_directory = '/Users/vishalray/GoogleDrive/Vishal/PhD/Simulations/Main_working_folder';
-    dir_sp3_q='/Users/vishalray/GoogleDrive/Vishal/PhD/Simulations/Spire 2022 February';
+    dir_sp3_q = '/Users/vishalray/GoogleDrive/Vishal/PhD/Simulations/Spire 2022 February';
+    output_dir = '/Users/vishalray/GoogleDrive/Vishal/PhD/Simulations/Spire 2022 February/spire_matlab';
 end
 addpath(fullfile(parent_directory, 'satellite-drag-cu/Density_inversion_methods/data/ancillary_data'))
 addpath(fullfile(parent_directory, 'satellite-drag-cu/PosVelTransformations'))
@@ -31,8 +33,7 @@ Omega_E = 7.2921151467*10^-5; %7292115.8553e-11 + 4.3e-15*(GREGORIANtoJD_vector(
 %% Inputs
 % sat_ID = 'FM104';
 yyyy_sat = 2022;
-mon_sat = 2;
-day_sat = [2, 3];
+mon_sat_array = [1:12];
 step_size = 1;               % index step at which to store data 
 %% Read EOP for eci to ecef conversion
 
@@ -46,39 +47,39 @@ load LeapSeconds.mat
 load EOP.mat
 load Nutation1980.mat
 eqeterms = 1;
-EpochUTC = GREGORIANtoJD_vector(yyyy_sat, mon_sat, day_sat(1));
-leap_sec = LeapSeconds(EpochUTC, LeapSecInfo);
-%% Find satellite ids
-dir_struct = dir(dir_sp3_q);
-dir_name_all = {dir_struct.name};
-dir_name = [];
-for ii = 1:numel(day_sat)
-    date_curr(ii,:) = datestr([yyyy_sat, mon_sat, day_sat(ii), 00, 00, 00],'yyyy-mm-dd');
-    dir_name = [dir_name,dir_name_all(contains(dir_name_all, date_curr(ii,:)))];
-end
-telAtt_files = dir_name(contains(dir_name, 'telAtt'));
-nav_files = dir_name(contains(dir_name, 'navigation'));
-telAtt_ids = extractBetween(telAtt_files, 'FM', '_telAtt');
-nav_ids = extractBetween(nav_files, 'FM', '_navigation');
-% id_common = strcat('FM',intersect(telAtt_ids, nav_ids));
-id_common = {'FM100'};
-%% Read data
-rms_pos_all = [];
-rms_vel_all = [];
-for ii = 1:numel(id_common)
-    ii
-    sat_ID = id_common{ii};
-    [rms_pos, rms_vel] = run_datageneration(dir_sp3_q, yyyy_sat,mon_sat,day_sat, sat_ID, leap_sec, NUT1980Info, EOPInfo, step_size);
-    if isempty(rms_pos)
-        rms_pos = NaN(3,1);
-        rms_vel = NaN(3,1);
+
+%% Run data loop
+
+for mon_sat = mon_sat_array
+    day_sat_array = [1:eomday(yyyy_sat, mon_sat)];
+    for day_sat = day_sat_array
+        day_sat
+        EpochUTC = GREGORIANtoJD_vector(yyyy_sat, mon_sat, day_sat);
+        leap_sec = LeapSeconds(EpochUTC, LeapSecInfo);
+        %% Find satellite ids
+        dir_struct = dir(dir_sp3_q);
+        dir_name_all = {dir_struct.name};
+        date_curr = datestr([yyyy_sat, mon_sat, day_sat, 00, 00, 00],'yyyy-mm-dd');
+        dir_name = dir_name_all(contains(dir_name_all, date_curr));
+        telAtt_files = dir_name(contains(dir_name, 'telAtt'));
+        nav_files = dir_name(contains(dir_name, 'navigation'));
+        telAtt_ids = extractBetween(telAtt_files, 'FM', '_telAtt');
+        nav_ids = extractBetween(nav_files, 'FM', '_navigation');
+        id_common = strcat('FM',intersect(telAtt_ids, nav_ids));
+
+        %% Read data
+        for ii = 1:numel(id_common)
+            sat_ID = id_common{ii};
+            [rms_pos, rms_vel] = run_datageneration(dir_sp3_q, yyyy_sat,mon_sat,day_sat, sat_ID, leap_sec, NUT1980Info, EOPInfo, step_size, output_dir);
+            if isempty(rms_pos)
+                rms_pos = NaN(3,1);
+                rms_vel = NaN(3,1);
+            end
+        end
     end
-    rms_pos_all = [rms_pos_all, rms_pos];
-    rms_vel_all = [rms_vel_all, rms_vel];
 end
 
-
-function [rms_pos, rms_vel] = run_datageneration(dir_sp3_q, yyyy_sat, mon_sat, day_sat, sat_ID, leap_sec, NUT1980Info, EOPInfo, step_size)
+function [rms_pos, rms_vel] = run_datageneration(dir_sp3_q, yyyy_sat, mon_sat, day_sat, sat_ID, leap_sec, NUT1980Info, EOPInfo, step_size, output_dir)
 rms_pos = [];
 rms_vel = [];
 
@@ -99,22 +100,6 @@ q_sp3log(1,:) = data_.qx;   q_sp3log(2,:) = data_.qy;      q_sp3log(3,:) = data_
 time_sec_all = 86400*GREGORIANtoJD_vector(data_.yyyy_att_all,data_.mon_att_all,data_.dday_att_all) +...
     3600*data_.hh_att_all + 60*data_.mm_att_all + data_.ss_att_all;
 
-
-%% Used by Vallado
-% % Julian Centuries past 1-Jan-2000 12:00 Terrestrial Time
-% ttt = (jdutc_sec + eop.dat + 32.184 - 86400*2451545.0)/86400/36525; % sec
-% % Interpolate Delta UT1 to TLE time stamps
-% dut1 = interp1(86400*eop.fmjd,eop.dut1,jdutc_sec-86400*2400000.5,'linear'); % still in sec
-% % Julian day in UT1
-% jdut1 = (jdutc_sec+dut1)/86400;
-% % Interpolate Earth Orientation parameters (EOP) to TLE time stamps (in UTC)
-% lod = 1e-3*interp1(86400*eop.fmjd,eop.rlod,jdutc_sec-86400*2400000.5,'linear'); % now in sec
-% xp = (pi/180/3600)*interp1(86400*eop.fmjd,eop.xp,jdutc_sec-86400*2400000.5,'linear'); % now in radians (from arc-sec)
-% yp = (pi/180/3600)*interp1(86400*eop.fmjd,eop.yp,jdutc_sec-86400*2400000.5,'linear'); % now in radians (from arc-sec)
-% dpsi = (pi/180/3600/1000)*interp1(86400*eop.fmjd,eop.dpsi,jdutc_sec-86400*2400000.5,'linear'); % now in radians (from milli-arc-sec)
-% deps = (pi/180/3600/1000)*interp1(86400*eop.fmjd,eop.deps,jdutc_sec-86400*2400000.5,'linear'); % now in radians (from milli-arc-sec)
-% % vcorot is for transforming ECEF atmosphere co-rotation v = [0;0;0] and wind = [un;vn;wn] to ECI
-% vcorot = [0;0;0];
 
 
 %% Save the three sets of data: Sp3 eci, calculated eci, log sp3 eci and times corresponding to that
@@ -265,65 +250,6 @@ if ~((time_sec_att(1) > time_uni(end)) || (time_uni(1) > time_sec_att(end)))
     
     
     %%
-    %%
-    
-%     figure()
-%     subplot(2,1,1)
-%     plot(sod_error_true/3600, abs(pos_error_true(1,:))*1e2,'.')
-%     hold on
-%     plot(sod_error_true/3600, abs(pos_error_true(2,:))*1e2,'.')
-%     plot(sod_error_true/3600, abs(pos_error_true(3,:))*1e2,'.')
-%     ylabel('Position (cm)')
-%     legend('X','Y','Z')
-%     title('POD overlap errors in ECEF (Spire)')
-%     set(gca,'FontSize',16)
-%     grid on
-%     subplot(2,1,2)
-%     plot(sod_error_true/3600, abs(vel_error_true(1,:))*1e3,'.')
-%     hold on
-%     plot(sod_error_true/3600, abs(vel_error_true(2,:))*1e3,'.')
-%     plot(sod_error_true/3600, abs(vel_error_true(3,:))*1e3,'.')
-%     ylabel('Velocity (mm/s)')
-%     set(gca,'FontSize',16)
-%     grid on
-%     xlabel('Hours')
-%     
-%     sod_uni = time_uni;
-%     sod_att = time_sec_att;
-%     sod_att_all = time_sec_all;
-%     figure(3)
-%     subplot(3,1,1)
-%     plot(sod_uni/3600, yaw_uni*180/pi,'.')
-%     hold on
-%     plot(sod_uni/3600, yaw_uni_all*180/pi,'.')
-%     plot(sod_att/3600, yaw_uni_data*180/pi,'.')
-%     plot(sod_att_all/3600, yaw_uni_all_data*180/pi,'.')
-%     ylabel('Yaw (deg)')
-%     legend('LeoAtt (high-cadence, data-gaps)', 'TelAtt (low-cadence, continuous)', 'LeoAtt data', 'TelAtt data')
-%     title('Attitude data')
-%     set(gca,'FontSize',16)
-%     grid on
-%     subplot(3,1,2)
-%     plot(sod_uni/3600, pitch_uni*180/pi,'.')
-%     hold on
-%     plot(sod_uni/3600, pitch_uni_all*180/pi,'.')
-%     plot(sod_att/3600, pitch_uni_data*180/pi,'.')
-%     plot(sod_att_all/3600, pitch_uni_all_data*180/pi,'.')
-%     ylabel('Pitch (deg)')
-%     title('Attitude data')
-%     set(gca,'FontSize',16)
-%     grid on
-%     subplot(3,1,3)
-%     plot(sod_uni/3600, roll_uni*180/pi,'.')
-%     hold on
-%     plot(sod_uni/3600, roll_uni_all*180/pi,'.')
-%     plot(sod_att/3600, roll_uni_data*180/pi,'.')
-%     plot(sod_att_all/3600, roll_uni_all_data*180/pi,'.')
-%     ylabel('Roll (deg)')
-%     title('Attitude data')
-%     set(gca,'FontSize',16)
-%     grid on
-%     xlabel('Hours')
     
     rms_pos = rms(pos_error_true, 2);
     rms_vel = rms(vel_error_true, 2);
@@ -332,32 +258,8 @@ if ~((time_sec_att(1) > time_uni(end)) || (time_uni(1) > time_sec_att(end)))
     std_vel = std(vel_error_true, 0, 2);
     
     
-    save(strcat('spire_satellite_data_',sat_ID,'_',num2str(yyyy_sat),'_',sprintf('%02d', mon_sat),'_', sprintf('%02d', day_sat(1))),'data_','Xsp3_eci','yyyy_calc','mon_calc','day_calc',...
+    save(fullfile( output_dir, strcat('spire_satellite_data_',sat_ID,'_',num2str(yyyy_sat),'_',sprintf('%02d', mon_sat),'_', sprintf('%02d', day_sat(1)))),'data_','Xsp3_eci','yyyy_calc','mon_calc','day_calc',...
         'hh_calc','mm_calc','ss_calc','time_sec_sp3','q_sp3','theta_data','phi_data','time_uni','q_uni','time_sec_all', 'sod_error_true', 'pos_error_true',...
         'vel_error_true', 'std_pos', 'std_vel', 'q_uni_all', 'yaw_uni', 'yaw_uni_all', 'pitch_uni', 'pitch_uni_all', 'roll_uni', 'roll_uni_all', 'time_sec_att');
 end
 end
-%% Plots overlapping data
-
-% pos_diff = pos_all(:,ind_over) - pos_all(:,ind_data_common);
-% vel_diff = vel_all(:,ind_over) - vel_all(:,ind_data_common);
-% figure(1)
-% subplot(2,1,1)
-% plot(sod_all(ind_over)/3600, abs(pos_diff(1,:))*1e2,'.')
-% hold on
-% plot(sod_all(ind_over)/3600, abs(pos_diff(2,:))*1e2,'.')
-% plot(sod_all(ind_over)/3600, abs(pos_diff(3,:))*1e2,'.')
-% ylabel('Position (cm)')
-% legend('X','Y','Z')
-% title('POD overlap errors in ECEF')
-% set(gca,'FontSize',16)
-% grid on
-% subplot(2,1,2)
-% plot(sod_all(ind_over)/3600, abs(vel_diff(1,:))*1e3,'.')
-% hold on
-% plot(sod_all(ind_over)/3600, abs(vel_diff(2,:))*1e3,'.')
-% plot(sod_all(ind_over)/3600, abs(vel_diff(3,:))*1e3,'.')
-% ylabel('Velocity (mm/s)')
-% set(gca,'FontSize',16)
-% grid on
-% xlabel('Hours')

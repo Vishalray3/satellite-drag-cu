@@ -19,12 +19,12 @@ if nargin ~= 3
   warning('Incorrect number of input arguments');
   return;
 end
-if mn < 1 | mn > 12
+if mn < 1 || mn > 12
   warning('Invalid input month');
   return
 end
 if dy < 1
-  if (mn == 2 & dy > 29) | (any(mn == [3 5 9 11]) & dy > 30) | (dy > 31)
+  if (mn == 2 && dy > 29) || (any(mn == [3 5 9 11]) && dy > 30) || (dy > 31)
     warning('Invalid input day');
     return
   end
