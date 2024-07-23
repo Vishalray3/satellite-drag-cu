@@ -71,11 +71,17 @@ parfor mon_sat = mon_sat_array
         %% Read data
         for ii = 1:numel(id_common)
             sat_ID = id_common{ii};
-            [rms_pos, rms_vel] = run_datageneration(dir_sp3_q, yyyy_sat,mon_sat,day_sat, sat_ID, leap_sec, NUT1980Info, EOPInfo, step_size, output_dir);
-            if isempty(rms_pos)
-                rms_pos = NaN(3,1);
-                rms_vel = NaN(3,1);
+            try
+                [rms_pos, rms_vel] = run_datageneration(dir_sp3_q, yyyy_sat,mon_sat,day_sat, sat_ID, leap_sec, NUT1980Info, EOPInfo, step_size, output_dir);
+                if isempty(rms_pos)
+                    rms_pos = NaN(3,1);
+                    rms_vel = NaN(3,1);
+                end
+            catch error_loop
+                fprintf(1,'The identifier was:\n%s',e.identifier);
+                fprintf(1,'There was an error for satellite %s on day %u and month %u! The message was:\n%s',sat_ID, day_dat, mon_dat, e.message);              
             end
+                
         end
     end
 end

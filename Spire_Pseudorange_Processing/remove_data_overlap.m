@@ -47,38 +47,40 @@ for nn = 1:numel(ind_diff)
     end
     ind_temp = [ind_diff(nn)+1: ind_inc(1)-1];
     
-    ind_over_start(nn) = ind_temp(1);
-    over_interval(nn) = ind_temp(end) - ind_temp(1)+1;
-    if over_interval(nn) > ind_over_start(nn)
-        over_interval(nn) = ind_over_start(nn) - 1;
-        ind_temp = [ind_diff(nn)+1: ind_diff(nn)+over_interval(nn)];
-    end
-    
-    % Beginning of data-arcs
-    ind_midpoint = ceil(numel(ind_temp)/2);
-    
-    ind_over = [ind_over, ind_temp(1:ind_midpoint)];
-    
-    ind_data_common = [ind_over_start(nn) - over_interval(nn): ind_over_start(nn)-1];
-    % End of data-arcs
-    ind_data_comm_all = [ind_data_comm_all, ind_data_common(ind_midpoint+1:end)];
-    %
-    time_data = sod_all(ind_temp);
-    time_new = sod_all(ind_data_common);
-    %     pos_x = interp1(time_data, pos_all(1, ind_temp), time_new);
-    %     pos_y = interp1(time_data, pos_all(2, ind_temp), time_new);
-    %     pos_z = interp1(time_data, pos_all(3, ind_temp), time_new);
-    %
-    %     vel_x = interp1(time_data, vel_all(1, ind_temp), time_new);
-    %     vel_y = interp1(time_data, vel_all(2, ind_temp), time_new);
-    %     vel_z = interp1(time_data, vel_all(3, ind_temp), time_new);
-    %
-    %     pos_overlap_all = [pos_overlap_all, [pos_x; pos_y; pos_z]];
-    %     vel_overlap_all = [vel_overlap_all, [vel_x; vel_y; vel_z]];
-    
-    if time_data == time_new
-        ind_over_true = [ind_over_true, ind_temp];
-        ind_common_true = [ind_common_true, ind_data_common];
+    if ~isempty(ind_temp)
+        ind_over_start(nn) = ind_temp(1);
+        over_interval(nn) = ind_temp(end) - ind_temp(1)+1;
+        if over_interval(nn) > ind_over_start(nn)
+            over_interval(nn) = ind_over_start(nn) - 1;
+            ind_temp = [ind_diff(nn)+1: ind_diff(nn)+over_interval(nn)];
+        end
+
+        % Beginning of data-arcs
+        ind_midpoint = ceil(numel(ind_temp)/2);
+
+        ind_over = [ind_over, ind_temp(1:ind_midpoint)];
+
+        ind_data_common = [ind_over_start(nn) - over_interval(nn): ind_over_start(nn)-1];
+        % End of data-arcs
+        ind_data_comm_all = [ind_data_comm_all, ind_data_common(ind_midpoint+1:end)];
+        %
+        time_data = sod_all(ind_temp);
+        time_new = sod_all(ind_data_common);
+        %     pos_x = interp1(time_data, pos_all(1, ind_temp), time_new);
+        %     pos_y = interp1(time_data, pos_all(2, ind_temp), time_new);
+        %     pos_z = interp1(time_data, pos_all(3, ind_temp), time_new);
+        %
+        %     vel_x = interp1(time_data, vel_all(1, ind_temp), time_new);
+        %     vel_y = interp1(time_data, vel_all(2, ind_temp), time_new);
+        %     vel_z = interp1(time_data, vel_all(3, ind_temp), time_new);
+        %
+        %     pos_overlap_all = [pos_overlap_all, [pos_x; pos_y; pos_z]];
+        %     vel_overlap_all = [vel_overlap_all, [vel_x; vel_y; vel_z]];
+
+        if time_data == time_new
+            ind_over_true = [ind_over_true, ind_temp];
+            ind_common_true = [ind_common_true, ind_data_common];
+        end
     end
     
     
@@ -88,21 +90,28 @@ end
 % vel_error = vel_all(:, ind_data_comm_all) - vel_overlap_all;
 % sod_error = sod_all(ind_data_comm_all);
 
-pos_error_true = pos_all(:, ind_common_true) - pos_all(:, ind_over_true);
-vel_error_true = vel_all(:, ind_common_true) - vel_all(:, ind_over_true);
-sod_error_true = sod_all(ind_over_true);
+if ~isempty(ind_common_true)
+    pos_error_true = pos_all(:, ind_common_true) - pos_all(:, ind_over_true);
+    vel_error_true = vel_all(:, ind_common_true) - vel_all(:, ind_over_true);
+    sod_error_true = sod_all(ind_over_true);
 
-ind_remove_overlap = union(ind_over, ind_data_comm_all);
-ind_nonover = setdiff(ind_all, ind_remove_overlap);
-data_.yyyy = data_.yyyy(ind_nonover);
-data_.mon = data_.mon(ind_nonover);
-data_.dday = data_.dday(ind_nonover);
-data_.hh = data_.hh(ind_nonover);
-data_.mm = data_.mm(ind_nonover);
-data_.ss = data_.ss(ind_nonover);
-data_.sp3_p = data_.sp3_p(:,ind_nonover);
-data_.sp3_v = data_.sp3_v(:,ind_nonover);
-time_sec_sp3 = time_sec_sp3(ind_nonover);
+    ind_remove_overlap = union(ind_over, ind_data_comm_all);
+    ind_nonover = setdiff(ind_all, ind_remove_overlap);
+    data_.yyyy = data_.yyyy(ind_nonover);
+    data_.mon = data_.mon(ind_nonover);
+    data_.dday = data_.dday(ind_nonover);
+    data_.hh = data_.hh(ind_nonover);
+    data_.mm = data_.mm(ind_nonover);
+    data_.ss = data_.ss(ind_nonover);
+    data_.sp3_p = data_.sp3_p(:,ind_nonover);
+    data_.sp3_v = data_.sp3_v(:,ind_nonover);
+    time_sec_sp3 = time_sec_sp3(ind_nonover);
+else
+    pos_error_true = [];
+    vel_error_true = [];
+    sod_error_true = [];
+    
+end
 
 %% data overlaps for attitude
 if isfield(data_, 'dday_att')
@@ -167,5 +176,5 @@ if isfield(data_, 'dday_att')
     end
     time_sec_att = time_sec_att(ind_keep);
 else
-    time_sec_att = []
+    time_sec_att = [];
 end
