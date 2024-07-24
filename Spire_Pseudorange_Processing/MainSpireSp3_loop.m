@@ -78,8 +78,8 @@ parfor mon_sat = mon_sat_array
                     rms_vel = NaN(3,1);
                 end
             catch error_loop
-                fprintf(1,'The identifier was:\n%s',e.identifier);
-                fprintf(1,'There was an error for satellite %s on day %u and month %u! The message was:\n%s',sat_ID, day_dat, mon_dat, e.message);              
+                fprintf(1,'The identifier was:\n%s',error_loop.identifier);
+                fprintf(1,'There was an error for satellite %s on day %u and month %u! The message was:\n%s',sat_ID, day_sat, mon_sat, error_loop.message);              
             end
                 
         end
