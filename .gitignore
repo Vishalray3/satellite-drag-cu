@@ -168,3 +168,5 @@ cython_debug/
 *.bsp
 *.csv
 *.tar
+ceres_erp_mex.c
+GravAccelPartialsExterior_mex.c
