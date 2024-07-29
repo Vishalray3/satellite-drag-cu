@@ -1,5 +1,6 @@
 %% propagator
-function [Xdot,Cd_est,rho, rho_nom, a_total, a_drag, a_srp_ntw,a_earthrad_ntw,theta_in, phi_in, rot_ECI2ECEF, a_grav_eci, a_sun_eci, a_moon_eci, a_srp_eci, a_earthrad_eci] = propagator_dmc_real_spire(t,X,parameters)
+function [Xdot,Cd_est,rho, rho_nom, a_total, a_drag, a_srp_ntw,a_earthrad_ntw,theta_in, phi_in, rot_ECI2ECEF, a_grav_eci, a_sun_eci, a_moon_eci,...
+    a_srp_eci, a_earthrad_eci, t_ind] = propagator_dmc_real_spire(t,X,parameters)
 % %#codegen
 % coder.extrinsic('matlab')
 %% Parameters
