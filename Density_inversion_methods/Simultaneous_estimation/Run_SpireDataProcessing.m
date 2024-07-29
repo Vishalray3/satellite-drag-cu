@@ -57,7 +57,7 @@ parfor month_data = month_sat_array
         data_pattern = "spire_satellite_data_FM" + digitsPattern(3) + '_' + digitsPattern(4) + '_' + digitsPattern(2) + '_' + digitsPattern(2) + '.mat';
 
         dir_name = dir_name(matches(dir_name, data_pattern));
-        sat_ID_mat = {'FM100'}; %extractBetween(dir_name, strcat('data', data_pod, '_'),  strcat('_', sprintf('%d', year_data))); %  %
+        sat_ID_mat = {'FM102'}; %extractBetween(dir_name, strcat('data', data_pod, '_'),  strcat('_', sprintf('%d', year_data))); %  %
         dataset_sat_mat = extractBefore(dir_name, '_satellite');
 
         for ii = 1:numel(sat_ID_mat)
