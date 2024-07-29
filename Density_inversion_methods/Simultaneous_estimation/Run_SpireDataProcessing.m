@@ -38,10 +38,11 @@ end
 
 %% Main loop
 parfor month_data = month_sat_array
-    
+    month_data
     day_sat_array = [1:eomday(year_data, month_data)];
     
     for day_data = day_sat_array
+        day_data
         td = datetime(year_data, month_data, day_data);
         doy =  day(td, 'dayofyear');  % 302; %                     %% day of year (nrlmsise-00)
 
