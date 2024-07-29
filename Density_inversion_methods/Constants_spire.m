@@ -17,7 +17,7 @@ Cbar(3,1) = -0.48416948e-3 + 11.6e-12*18.934;
 Cbar(4,1) = 0.9571612e-6 + 4.9e-12*18.934;
 Cbar(5,1) = 0.5399659e-6 + 4.7e-12*18.934;
 
-load(strcat('spire_satellite_data',data_pod, '_', sat_ID,'_',date_curr))
+load(fullfile(dir_data, strcat('spire_satellite_data',data_pod, '_', sat_ID,'_',date_curr)))
 
 reci = Xsp3_eci(1:3,:); veci = Xsp3_eci(4:6,:); yyyy = yyyy_calc; mon = mon_calc; day_data = day_calc;
 hh = hh_calc; mm = mm_calc; ss = ss_calc; recef = data_.sp3_p;

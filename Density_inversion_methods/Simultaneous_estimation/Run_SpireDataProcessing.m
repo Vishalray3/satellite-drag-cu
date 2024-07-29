@@ -64,7 +64,7 @@ parfor month_data = month_sat_array
             sat_ID = sat_ID_mat{ii};
             dataset_sat = dataset_sat_mat{ii};
             try
-                run_ODcode(dir_data, sat_ID, date_curr, flag_rho, dataset_sat, hasdm_mat, erp_ceres_datafile, data_pod, case_run, del_T, linux_os);
+                run_ODcode(dir_data, sat_ID, date_curr, flag_rho, dataset_sat, hasdm_mat, erp_ceres_datafile, data_pod, case_run, del_T, linux_os, output_dir);
             catch error_loop
                 fprintf(1,'There was an error for satellite %s on day %u and month %u! The message was:\n%s',sat_ID, day_data, month_data, error_loop.message); 
             end
@@ -73,6 +73,6 @@ parfor month_data = month_sat_array
 end 
 % toc
 
-function [] = run_ODcode(dir_data,sat_ID, date_curr, flag_rho, dataset_sat, hasdm_mat, erp_ceres_datafile, data_pod, case_run, del_T, linux_os)
+function [] = run_ODcode(dir_data,sat_ID, date_curr, flag_rho, dataset_sat, hasdm_mat, erp_ceres_datafile, data_pod, case_run, del_T, linux_os, output_dir)
 Main_simulStudy
 end
