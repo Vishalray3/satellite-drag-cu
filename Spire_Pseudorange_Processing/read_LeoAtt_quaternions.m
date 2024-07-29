@@ -1,4 +1,4 @@
-function [data, cal_time_att, data_eul] = read_LeoAtt_quaternions_new(fname)
+function [data, cal_time_att, data_eul] = read_LeoAtt_quaternions(fname)
 %*******************************************************
 % function [ rinex ] = read_rinex_obs(fname, PRN_list)
 %
