@@ -1,4 +1,4 @@
-function [data, cal_time_gps] = read_pos_sp3_new(fname)
+function [data, cal_time_gps] = read_pos_sp3(fname)
 %*******************************************************
 % function [ rinex ] = read_rinex_obs(fname, PRN_list)
 %

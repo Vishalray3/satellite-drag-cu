@@ -24,8 +24,8 @@ X_interp_aug(1:6,:) = X_interp;
 
 %% Calculate the different accelerations
 for ii = 1:numel(time_interp)
-    [~,Cd_est(ii),rho(ii), rho_nom(ii), ~, a_drag(:,ii), ~, ~, ~, ~, rot_ECI2ECEF, a_grav(:,ii), a_sun(:,ii), a_moon(:,ii), a_srp(:,ii), a_earthrad(:,ii)]...
-        = propagator_dmc_real_spire(time_interp(ii),X_interp_aug(:,ii),parameters);
+    [~,Cd_est(ii),rho(ii), rho_nom(ii), ~, a_drag(:,ii), ~, ~, ~, ~, rot_ECI2ECEF, a_grav(:,ii), a_sun(:,ii), a_moon(:,ii), a_srp(:,ii),...
+        a_earthrad(:,ii), sun_pos_ind(ii)] = propagator_dmc_real_spire(time_interp(ii),X_interp_aug(:,ii),parameters);
     X_ecef = rot_ECI2ECEF*X_interp_aug(1:3,ii);
     X_lla = ecef2lla(X_ecef');
     latitude(ii) = X_lla(1);
@@ -54,10 +54,29 @@ a_drag_hasdm = rho_hasdm_interp.*drag_par;
 % clearvars
 % load Truth800km_edr
 % clear rho_true_eff  g_con_integ  g_srp_integ  g_erp_integ  g_noncon_integ  g_dragpar_integ  g_drag_integ  delta_v  delta_ener  rho_eff  time_rho
-arclen = [60*60];
+arclen = [30*60, 60*60, 90*60];
 sample_time = 10;
+
+row_num = numel(arclen);
+col_num = ceil(numel(time_interp)/sample_time);
+time_rho = NaN(row_num, col_num);
+rho_nom_eff = NaN(row_num, col_num);
+rho_nom_inst = NaN(row_num, col_num);
+rho_hasdm_inst = NaN(row_num, col_num);
+rho_hasdm_eff = NaN(row_num, col_num);
+rho_eff = NaN(row_num, col_num);
+g_con_integ = NaN(row_num, col_num);
+g_srp_integ = NaN(row_num, col_num);
+g_erp_integ = NaN(row_num, col_num);
+g_drag_integ = NaN(row_num, col_num);
+g_dragpar_integ = NaN(row_num, col_num);
+
+delta_v = NaN(row_num, col_num);
+
 for mm = 1:numel(arclen)
     delta_t = arclen(mm); %10; %round(T_orb);
+    round_delta = round(delta_t/2);
+    round_delta_1 = round((delta_t-1)/2);
     kk = 1;
     for ii = 1:sample_time:numel(time_interp)-delta_t
         x_state = X_interp(1:3,ii:ii+delta_t-1);
@@ -69,46 +88,41 @@ for mm = 1:numel(arclen)
         g_dragpar = drag_par(:,ii:ii+delta_t-1);
         g_drag = a_drag(:,ii:ii+delta_t-1);
         
-        rho_nom_eff(kk) = mean(vecnorm(a_drag(:,ii:ii+delta_t-1),2,1))/mean(vecnorm(drag_par(:,ii:ii+delta_t-1),2,1));
-        rho_nom_inst(kk) = rho(ii+round((delta_t-1)/2));
-        rho_hasdm_inst(kk) = rho_hasdm_interp(ii+round((delta_t-1)/2));
+        rho_nom_eff(mm, kk) = mean(vecnorm(a_drag(:,ii:ii+delta_t-1),2,1))/mean(vecnorm(drag_par(:,ii:ii+delta_t-1),2,1));
+        rho_nom_inst(mm, kk) = rho(ii+round_delta_1);
+        rho_hasdm_inst(mm, kk) = rho_hasdm_interp(ii+round_delta_1);
         
-        rho_hasdm_eff(kk) = mean(vecnorm(a_drag_hasdm(:,ii:ii+delta_t-1),2,1))/mean(vecnorm(drag_par(:,ii:ii+delta_t-1),2,1));
+        rho_hasdm_eff(mm, kk) = mean(vecnorm(a_drag_hasdm(:,ii:ii+delta_t-1),2,1))/mean(vecnorm(drag_par(:,ii:ii+delta_t-1),2,1));
         
-        g_con_integ(kk) = -(trapz(x_state(1,:),g_con(1,:))+ trapz(x_state(2,:),g_con(2,:))+ trapz(x_state(3,:),g_con(3,:)));
-        g_srp_integ(kk) = trapz(x_state(1,:),g_srp(1,:))+ trapz(x_state(2,:),g_srp(2,:))+ trapz(x_state(3,:),g_srp(3,:));
-        g_erp_integ(kk) = trapz(x_state(1,:),g_erp(1,:))+ trapz(x_state(2,:),g_erp(2,:))+ trapz(x_state(3,:),g_erp(3,:));
-        g_noncon_integ(kk) = g_srp_integ(kk) + g_erp_integ(kk);
+        g_con_integ(mm, kk) = -(trapz(x_state(1,:),g_con(1,:))+ trapz(x_state(2,:),g_con(2,:))+ trapz(x_state(3,:),g_con(3,:)));
+        g_srp_integ(mm, kk) = trapz(x_state(1,:),g_srp(1,:))+ trapz(x_state(2,:),g_srp(2,:))+ trapz(x_state(3,:),g_srp(3,:));
+        g_erp_integ(mm, kk) = trapz(x_state(1,:),g_erp(1,:))+ trapz(x_state(2,:),g_erp(2,:))+ trapz(x_state(3,:),g_erp(3,:));
+        g_noncon_integ = g_srp_integ(mm, kk) + g_erp_integ(mm, kk);
         
-        g_dragpar_integ(kk) = trapz(x_state(1,:),g_dragpar(1,:))+ trapz(x_state(2,:),g_dragpar(2,:))+ trapz(x_state(3,:),g_dragpar(3,:));
-        g_drag_integ(kk) = trapz(x_state(1,:),g_drag(1,:))+ trapz(x_state(2,:),g_drag(2,:))+ trapz(x_state(3,:),g_drag(3,:));
+        g_dragpar_integ(mm, kk) = trapz(x_state(1,:),g_dragpar(1,:))+ trapz(x_state(2,:),g_dragpar(2,:))+ trapz(x_state(3,:),g_dragpar(3,:));
+        g_drag_integ(mm, kk) = trapz(x_state(1,:),g_drag(1,:))+ trapz(x_state(2,:),g_drag(2,:))+ trapz(x_state(3,:),g_drag(3,:));
         
-        delta_v(kk) = (vf^2-v0^2)/2;
-        delta_ener(kk) = (vf^2-v0^2)/2 + g_con_integ(kk);
+        delta_v(mm, kk) = (vf^2-v0^2)/2;
+        delta_ener = (vf^2-v0^2)/2 + g_con_integ(mm, kk);
         
-        rho_eff(kk) = (delta_ener(kk) - g_noncon_integ(kk))/g_dragpar_integ(kk);
-        rho_eff_vec(ii:ii+delta_t-1) = rho_eff(kk);
-        rho_nom_eff_vec(ii:ii+delta_t-1) = rho_nom_eff(kk);
-        rho_hasdm_eff_vec(ii:ii+delta_t-1) = rho_hasdm_eff(kk);
-        time_ind = ii + round(delta_t/2);
-        time_rho(kk) = time_interp(time_ind);
-        time_eff_vec(ii:ii+delta_t-1) = time_interp(ii:ii+delta_t-1);
+        rho_eff(mm, kk) = (delta_ener - g_noncon_integ)/g_dragpar_integ(mm, kk);
+        time_ind = ii + round_delta;
+        time_rho(mm,kk) = time_interp(time_ind);
         kk = kk+1;
     end
     
-    rho_est_error = (rho_hasdm_inst-rho_eff)./rho_hasdm_inst*100;
-    rho_est_error_avg = (rho_hasdm_eff-rho_eff)./rho_hasdm_eff*100;
-    rho_nom_error = (rho_hasdm_inst-rho_nom_eff)./rho_hasdm_inst*100;
-    rho_nom_error_avg = (rho_hasdm_eff-rho_nom_eff)./rho_hasdm_eff*100;
-    rho_est_mean(mm) = nanmean(rho_est_error);
-    rho_est_rms(mm)  = sqrt(nanmean(rho_est_error.*rho_est_error));
-    rho_est_mean_avg(mm) = nanmean(rho_est_error_avg);
-    rho_est_rms_avg(mm)  = sqrt(nanmean(rho_est_error_avg.*rho_est_error_avg));
-    rho_nom_mean(mm) = nanmean(rho_nom_error);
-    rho_nom_rms(mm)  = sqrt(nanmean(rho_nom_error.*rho_nom_error));
-    rho_nom_mean_avg(mm) = nanmean(rho_nom_error_avg);
-    rho_nom_rms_avg(mm)  = sqrt(nanmean(rho_nom_error_avg.*rho_nom_error_avg));
-%     clear rho_true_eff g_con_integ g_srp_integ g_erp_integ g_noncon_integ g_dragpar_integ g_drag_integ delta_ener rho_eff time_rho rho_nom_eff rho_hasdm_eff
+%     rho_est_error = (rho_hasdm_inst(mm,:) - rho_eff(mm,:)) ./ rho_hasdm_inst(mm,:)*100;
+%     rho_est_error_avg = (rho_hasdm_eff(mm,:) - rho_eff(mm,:)) ./ rho_hasdm_eff(mm,:)*100;
+%     rho_nom_error = (rho_hasdm_inst(mm,:) - rho_nom_eff(mm,:)) ./ rho_hasdm_inst(mm,:)*100;
+%     rho_nom_error_avg = (rho_hasdm_eff(mm,:) - rho_nom_eff(mm,:)) ./ rho_hasdm_eff(mm,:)*100;
+%     rho_est_mean(mm) = nanmean(rho_est_error);
+%     rho_est_rms(mm)  = sqrt(nanmean(rho_est_error.*rho_est_error));
+%     rho_est_mean_avg(mm) = nanmean(rho_est_error_avg);
+%     rho_est_rms_avg(mm)  = sqrt(nanmean(rho_est_error_avg.*rho_est_error_avg));
+%     rho_nom_mean(mm) = nanmean(rho_nom_error);
+%     rho_nom_rms(mm)  = sqrt(nanmean(rho_nom_error.*rho_nom_error));
+%     rho_nom_mean_avg(mm) = nanmean(rho_nom_error_avg);
+%     rho_nom_rms_avg(mm)  = sqrt(nanmean(rho_nom_error_avg.*rho_nom_error_avg));
 end
 
 % [rms_min, ind_min] = min(rho_est_rms);
@@ -132,17 +146,37 @@ end
 % else
 %     arc_20 = NaN;
 % end
-save(strcat('results_cdpanel_spire_satellite_data',data_pod, '_', sat_ID,'_',date_curr))
-%% PLots
-figure(2)
-plot(time_rho/3600,rho_hasdm_eff,'k','LineWidth',2)
-hold on
-plot(time_rho/3600,rho_nom_eff,'r','LineWidth',2)
-plot(time_rho/3600,rho_eff,'g','LineWidth',2)
-grid on
-ylabel('Density ($kg/m^3$)','Interpreter','latex')
-xlabel('Time (hours)')
-title('Spire-derived densities (60-minute arc-length)')
-legend('HASDM','JB2008','EDR')
-set(gca,'FontSize',14)
+
+% downsample before saving
+if del_T == 1
+    a_drag = a_drag(1:sample_time:end);
+    a_drag_hasdm = a_drag_hasdm(1:sample_time:end);
+    a_srp = a_srp(1:sample_time:end);
+    a_grav = a_grav(1:sample_time:end);
+    a_sun = a_sun(1:sample_time:end);
+    a_moon = a_moon(1:sample_time:end);
+    latitude = latitude(1:sample_time:end);
+    longitude = longitude(1:sample_time:end);
+    alt_calc = alt_calc(1:sample_time:end);
+    time_params = time_interp(1:sample_time:end);
+    X_state = X_interp_aug(:,1:sample_time:end);
+    sun_pos_ind = sun_pos_ind(1:sample_time:end);
+end
+save(strcat('results_cdpanel_spire_satellite_data',data_pod, '_', sat_ID,'_',date_curr), 'rho_hasdm_inst',...
+    'rho_hasdm_eff', 'rho_nom_inst', 'rho_nom_eff', 'rho_eff', 'g_con_integ', 'g_srp_integ', 'g_erp_integ', 'g_drag_integ',...
+    'g_dragpar_integ', 'time_rho', 'delta_v', 'arclen', 'Cd_est', 'latitude', 'longitude', 'alt_calc', 'time_params', 'data_fraction',...
+    'jd_init', 'parameters', 'X_state', 'sun_pos_ind')
+
+% %% PLots
+% figure(2)
+% plot(time_rho(1,:)/3600,rho_hasdm_eff(1,:),'k','LineWidth',2)
+% hold on
+% plot(time_rho(1,:)/3600,rho_nom_eff(1,:),'r','LineWidth',2)
+% plot(time_rho(1,:)/3600,rho_eff(1,:),'g','LineWidth',2)
+% grid on
+% ylabel('Density ($kg/m^3$)','Interpreter','latex')
+% xlabel('Time (hours)')
+% title('Spire-derived densities (60-minute arc-length)')
+% legend('HASDM','JB2008','EDR')
+% set(gca,'FontSize',14)
 

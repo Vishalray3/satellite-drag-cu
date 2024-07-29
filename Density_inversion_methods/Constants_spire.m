@@ -233,6 +233,7 @@ tai_time_gps_data  = jdgps_sec_data-jdgps_epoch + 19;
 et_time_gps_data   = cspice_unitim(tai_time_gps_data, 'TAI', 'TDB');
 
 
+data_fraction = numel(time_prop_utc_ekf)/numel(time_prop_utc_ekf(1):del_T:time_prop_utc_ekf(end));
 %% Polar variables
 [xp_mean, yp_mean] = mean_polar(yyyy(1)); % average in arc-secs
 Cbar(3,2) = (sqrt(3)*xp_mean*Cbar(3,1) - xp_mean*Cbar(3,3) + yp_mean*Sbar(3,3))/3600*pi/180;
@@ -332,8 +333,8 @@ angle_panels = zeros(numel(time_prop_utc),1,N_plates);
 % theta = repmat(theta,N_plates,1);
 % phi = zeros(size(theta));
 %% Measurement noise values, actual GPM values
-sig_meas(1) = 5; %mean(std_pos); %3;  ; found by using the evar function on the residuals of the real data for order 150
-sig_meas(2) = 0.005; %mean(std_vel); % 0.01; %  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% noise mismatch
+sig_meas(1) = 0.5; %mean(std_pos); %3;  ; found by using the evar function on the residuals of the real data for order 150
+sig_meas(2) = 0.0005; %mean(std_vel); % 0.01; %  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% noise mismatch
 sigma_pos = sig_meas(1);
 sigma_vel = sig_meas(2);
 R_aug = diag([sigma_pos,sigma_pos,sigma_pos,sigma_vel,sigma_vel,sigma_vel].^2);
