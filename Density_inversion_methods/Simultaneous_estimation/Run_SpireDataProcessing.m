@@ -66,8 +66,8 @@ parfor month_data = month_sat_array
             try
                 run_ODcode(dir_data, sat_ID, date_curr, flag_rho, dataset_sat, hasdm_mat, erp_ceres_datafile, data_pod, case_run, del_T, linux_os, output_dir);
             catch error_loop
-                fprintf(1,'There was an error for satellite %s on day %u and month %u! The message was:',sat_ID, day_data, month_data); 
-                msg_txt = getReport(error_loop)
+                msg_txt = getReport(error_loop);
+                fprintf(1,'There was an error for satellite %s on day %u and month %u! The message was:%s',sat_ID, day_data, month_data, msg_txt); 
 %                 fprintf(1,'There was an error for satellite %s on day %u and month %u! The message was:\n%s',sat_ID, day_data, month_data, error_loop.message); 
             end
         end
