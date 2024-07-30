@@ -32,7 +32,7 @@ for ii=1:numel(file_names)
     time_rho_all = [time_rho_all, time_rho];
 end
 
-
+%%
 nom_ratio = rho_nom_all./rho_hasdm_all;
 data_ratio = rho_data_all./rho_hasdm_all;
 
@@ -101,4 +101,5 @@ grid on
 title('90-minute arc-length')
 legend('MSIS00/HASDM','Spire-EDR/HASDM')
 set(gca,'FontSize',14)
-legend(sprintf('MSIS00/HASDM, mean=%0.2f, rms=%0.2f', nom_mean(3), nom_rms(3)),sprintf('Spire-EDR/HASDM, mean=%0.2f, rms=%0.2f', data_mean(3), data_rms(3)))   
+legend(sprintf('MSIS00/HASDM, mean=%0.2f, rms=%0.2f', nom_mean(3), nom_rms(3)),sprintf('Spire-EDR/HASDM, mean=%0.2f, rms=%0.2f', data_mean(3), data_rms(3)))  
+saveas(gcf, fullfile(fig_path, strcat('spire_', year, '_', sat_id, '_density_edr_ratio.png'))) 
