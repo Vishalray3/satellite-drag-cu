@@ -20,6 +20,7 @@ flag_rho = 'MSIS00';
 erp_ceres_datafile = 'CERES_EBAF_Ed4.2_Subset_202202-202202.nc';
 case_run = 'EDR';
 del_T = 1;
+sat_ids_skip = {'FM102', 'FM103'};
 %% Hasdm initialize
 den_mat_list = cell(1, numel(hasdm_models));
 
@@ -49,9 +50,9 @@ parfor month_data = month_sat_array
         data_pattern = "spire_satellite_data_FM" + digitsPattern(3) + '_' + digitsPattern(4) + '_' + digitsPattern(2) + '_' + digitsPattern(2) + '.mat';
 
         dir_name = dir_name(matches(dir_name, data_pattern));
-        sat_ID_mat = {'FM102'}; %extractBetween(dir_name, strcat('data', data_pod, '_'),  strcat('_', sprintf('%d', year_data))); %  %
+        sat_ID_mat = extractBetween(dir_name, strcat('data', data_pod, '_'),  strcat('_', sprintf('%d', year_data))); %  %
         dataset_sat_mat = extractBefore(dir_name, '_satellite');
-
+        sat_ID_mat(ismember(sat_ID_mat, sat_ids_skip)) = [];
         for ii = 1:numel(sat_ID_mat)
             sat_ID = sat_ID_mat{ii};
             dataset_sat = dataset_sat_mat{ii};
