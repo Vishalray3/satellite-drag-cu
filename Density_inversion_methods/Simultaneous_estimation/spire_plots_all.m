@@ -10,7 +10,7 @@ data_pod = [];    % _ucar or []
 fig_path = fullfile(output_dir, 'figures');
 
 %% User inputs
-sat_id = "FM102";
+sat_id = "FM103";
 year = "2022";
 %%
 dir_struct = dir(output_dir);
