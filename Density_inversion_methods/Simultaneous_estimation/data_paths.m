@@ -9,3 +9,13 @@ else
     dir_data = fullfile(parent_directory, 'satellite-drag-cu/Density_inversion_methods/Simultaneous_estimation');
     output_dir = dir_data;
 end
+
+%% Add path to folders
+addpath(fullfile(parent_directory, 'mice/mice/src/mice/'))
+addpath(fullfile(parent_directory, 'mice/mice/lib/'))
+addpath(fullfile(parent_directory, 'satellite-drag-cu/JB08'))
+addpath(fullfile(parent_directory, 'satellite-drag-cu/Density_inversion_methods'))
+addpath(fullfile(parent_directory, 'satellite-drag-cu/Density_inversion_methods/data/ancillary_data'))
+addpath(fullfile(parent_directory, 'satellite-drag-cu/Density_inversion_methods/data/HASDM_data'))
+addpath(fullfile(parent_directory, 'satellite-drag-cu/PosVelTransformations'))
+addpath(fullfile(parent_directory, 'satellite-drag-cu/Density_inversion_methods/data/erp_data'))

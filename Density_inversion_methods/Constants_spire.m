@@ -80,12 +80,12 @@ for ii = 1:36
     end
 end
 %% Furnishing spice kernels to use the spice functions
-cspice_furnsh('de430.bsp')                       %% Planetary ephemerides
-cspice_furnsh('naif0012.tls')                    %% time leap seconds
-cspice_furnsh('earth_assoc_itrf93.tf')           %% Earth ITRF frame
-cspice_furnsh('pck00010.tpc')
-cspice_furnsh('gm_de431.tpc')                    %% GM values
-cspice_furnsh('earth_000101_210629_210407.bpc')
+% cspice_furnsh('de430.bsp')                       %% Planetary ephemerides
+% cspice_furnsh('naif0012.tls')                    %% time leap seconds
+% cspice_furnsh('earth_assoc_itrf93.tf')           %% Earth ITRF frame
+% cspice_furnsh('pck00010.tpc')
+% cspice_furnsh('gm_de431.tpc')                    %% GM values
+% cspice_furnsh('earth_000101_210629_210407.bpc')
 %% Force Models to be considered
 parameters.sun       = 1;
 parameters.moon      = 1;
