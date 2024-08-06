@@ -19,3 +19,4 @@ addpath(fullfile(parent_directory, 'satellite-drag-cu/Density_inversion_methods/
 addpath(fullfile(parent_directory, 'satellite-drag-cu/Density_inversion_methods/data/HASDM_data'))
 addpath(fullfile(parent_directory, 'satellite-drag-cu/PosVelTransformations'))
 addpath(fullfile(parent_directory, 'satellite-drag-cu/Density_inversion_methods/data/erp_data'))
+addpath(fullfile(parent_directory, 'nrlmsis2'))

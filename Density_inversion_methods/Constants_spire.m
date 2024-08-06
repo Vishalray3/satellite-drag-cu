@@ -416,7 +416,7 @@ switch flag_rho
         parameters.rho0_all = rho0_all;
         parameters.H_scale_all = H_scale_all;
         parameters.Talt = Talt;
-    case 'MSIS00'
+    case {'MSIS00', 'MSIS20'}
         load SOLFSMY
         load SOLRESAP
         [Ap_total, Ap_daily, F10_total, F81c] = msis_inputs(year, SOLdata, geomag_mat);

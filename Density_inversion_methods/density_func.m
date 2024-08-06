@@ -18,7 +18,7 @@ switch flag_rho
         M = 1/(n_den/sum(n_den)*(1./atm_mass'));
         rho_oxa = n_den(:,2) + n_den(:,8);
         T  = rho_inputs.Talt;
-    case 'MSIS00'
+    case {'MSIS00', 'MSIS20'}
         day      = rho_inputs.doy;
         altitude = rho_inputs.altitude;
         days_year_prev = rho_inputs.days_year_prev;
@@ -42,8 +42,17 @@ switch flag_rho
         
         flags = ones(23,1);
         flags(9) = -1;
-        [Temp,n_den] = atmosnrlmsise00(altitude, latitude, longitude, year, day, UTsec, F10, F10d, ap,flags);
-        rho     = n_den(:,6);
+        if strcmp(flag_rho, 'MSIS00')
+            [Temp,n_den] = atmosnrlmsise00(altitude, latitude, longitude, year, day, UTsec, F10, F10d, ap,flags);
+            rho     = n_den(:,6);
+        elseif strcmp(flag_rh, 'MSIS20')
+            [n_den, Temp] = mexMSIS2_legacy(day*1000,UTsec,altitude/1000,latitude,longitude,nan,F10,F10d,ap);
+            % convert from cgs to mks
+            n_den = n_den*1e6;
+            n_den(6) = n_den(6)*1e-3; 
+            rho = n_den(6);
+        end
+
         he  = rho_inputs.atm_mass(1);
         oxa = rho_inputs.atm_mass(2);
         nitm= rho_inputs.atm_mass(3);
@@ -57,6 +66,7 @@ switch flag_rho
         M = mass_sum./num;
         rho_oxa     = n_den(:,2)*oxa*amu + n_den(:,9)*oxa*amu;
         T = Temp(2);
+        
     case 'HP'
         day      = rho_inputs.doy;
         altitude = rho_inputs.altitude;
