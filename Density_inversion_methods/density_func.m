@@ -46,7 +46,7 @@ switch flag_rho
             [Temp,n_den] = atmosnrlmsise00(altitude, latitude, longitude, year, day, UTsec, F10, F10d, ap,flags);
             rho     = n_den(:,6);
         elseif strcmp(flag_rho, 'MSIS20')
-            [n_den, Temp] = mexMSIS2_legacy(day*1000,UTsec,altitude/1000,latitude,longitude,nan,F10,F10d,ap);
+            [n_den, Temp] = mexMSIS2_legacy(single(day*1000),single(UTsec),single(altitude/1000),single(latitude),single(longitude),nan,single(F10),single(F10d),single(ap));
             % convert from cgs to mks
             n_den = n_den*1e6;
             n_den(6) = n_den(6)*1e-3; 
