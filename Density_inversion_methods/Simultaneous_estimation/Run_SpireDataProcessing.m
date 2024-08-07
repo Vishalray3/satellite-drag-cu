@@ -3,7 +3,7 @@ clc
 clearvars
 % tic
 restoredefaultpath
-linux_os = 0;
+linux_os = 1;
 data_pod = [];    % _ucar or []
 
 [parent_directory, dir_data, output_dir] = data_paths(linux_os);
@@ -22,11 +22,11 @@ cspice_furnsh('earth_000101_210629_210407.bpc')
 year_data = 2022;
 month_sat_array = [1:12];
 hasdm_models = [{'2022_HASDM_400-475KM'}, {'2022_HASDM_500-575KM'}, {'2022_HASDM_600-675KM'}];
-flag_rho = 'MSIS00';  
+flag_rho = 'MSIS20';  
 erp_ceres_datafile = 'CERES_EBAF_Ed4.2_Subset_202202-202202.nc';
 case_run = 'EDR';
 del_T = 1;
-sat_ids_skip = {'FM102', 'FM103'};
+sat_ids_skip = {};
 %% Hasdm initialize
 den_mat_list = cell(1, numel(hasdm_models));
 
@@ -44,6 +44,7 @@ dir_name = dir_name(matches(dir_name, data_pattern));
 sat_ID_mat = extractBetween(dir_name, strcat('data', data_pod, '_'),  strcat('_', sprintf('%d', year_data))); %  %
 dataset_sat_mat = extractBefore(dir_name, '_satellite');
 sat_ID_mat(ismember(sat_ID_mat, sat_ids_skip)) = [];
+sat_ID_mat = {'FM102'}
 %% Main loop
 dataset_sat = dataset_sat_mat{1};
 for ii = 1:numel(sat_ID_mat)
