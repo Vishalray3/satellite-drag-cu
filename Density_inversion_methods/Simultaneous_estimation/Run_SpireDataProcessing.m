@@ -5,17 +5,26 @@ clearvars
 restoredefaultpath
 linux_os = 1;
 data_pod = [];    % _ucar or []
-
+parallel_flag = 1;
 [parent_directory, dir_data, output_dir] = data_paths(linux_os);
 %% Things to be kept in mind
 % datafile name : starlink_satellite_data_id_date,
 % spire_satellite_data_id_date
 
 %% Furnishing spice kernels to use the spice functions for each parallel thread
-c = parcluster('local'); % build the 'local' cluster object
-numWorkers = c.NumWorkers;
-parfor i = 1:numWorkers
-    % Add paths and furnish kernels
+if parallel_flag == 1
+    c = parcluster('local'); % build the 'local' cluster object
+    numWorkers = c.NumWorkers;
+    parfor i = 1:numWorkers
+        % Add paths and furnish kernels
+        cspice_furnsh('de430.bsp')                       %% Planetary ephemerides
+        cspice_furnsh('naif0012.tls')                    %% time leap seconds
+        cspice_furnsh('earth_assoc_itrf93.tf')           %% Earth ITRF frame
+        cspice_furnsh('pck00010.tpc')
+        cspice_furnsh('gm_de431.tpc')                    %% GM values
+        cspice_furnsh('earth_000101_210629_210407.bpc')
+    end
+else
     cspice_furnsh('de430.bsp')                       %% Planetary ephemerides
     cspice_furnsh('naif0012.tls')                    %% time leap seconds
     cspice_furnsh('earth_assoc_itrf93.tf')           %% Earth ITRF frame
