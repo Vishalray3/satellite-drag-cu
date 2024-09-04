@@ -11,13 +11,18 @@ data_pod = [];    % _ucar or []
 % datafile name : starlink_satellite_data_id_date,
 % spire_satellite_data_id_date
 
-%% Furnishing spice kernels to use the spice functions
-cspice_furnsh('de430.bsp')                       %% Planetary ephemerides
-cspice_furnsh('naif0012.tls')                    %% time leap seconds
-cspice_furnsh('earth_assoc_itrf93.tf')           %% Earth ITRF frame
-cspice_furnsh('pck00010.tpc')
-cspice_furnsh('gm_de431.tpc')                    %% GM values
-cspice_furnsh('earth_000101_210629_210407.bpc')
+%% Furnishing spice kernels to use the spice functions for each parallel thread
+c = parcluster('local'); % build the 'local' cluster object
+numWorkers = c.NumWorkers;
+parfor i = 1:numWorkers
+    % Add paths and furnish kernels
+    cspice_furnsh('de430.bsp')                       %% Planetary ephemerides
+    cspice_furnsh('naif0012.tls')                    %% time leap seconds
+    cspice_furnsh('earth_assoc_itrf93.tf')           %% Earth ITRF frame
+    cspice_furnsh('pck00010.tpc')
+    cspice_furnsh('gm_de431.tpc')                    %% GM values
+    cspice_furnsh('earth_000101_210629_210407.bpc')
+end
 %% user inputs
 year_data = 2022;
 month_sat_array = [1:12];
@@ -44,10 +49,10 @@ dir_name = dir_name(matches(dir_name, data_pattern));
 sat_ID_mat = extractBetween(dir_name, strcat('data', data_pod, '_'),  strcat('_', sprintf('%d', year_data))); %  %
 dataset_sat_mat = extractBefore(dir_name, '_satellite');
 sat_ID_mat(ismember(sat_ID_mat, sat_ids_skip)) = [];
-sat_ID_mat = {'FM102'}
+% sat_ID_mat = {'FM102', 'FM103'};
 %% Main loop
 dataset_sat = dataset_sat_mat{1};
-for ii = 1:numel(sat_ID_mat)
+parfor ii = 1:numel(sat_ID_mat)
     sat_ID = sat_ID_mat{ii}
     for month_data = month_sat_array
         month_data
