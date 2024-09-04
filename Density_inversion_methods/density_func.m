@@ -48,8 +48,8 @@ switch flag_rho
         elseif strcmp(flag_rho, 'MSIS20')
             iyd = 1000*mod(mod(year, 1000), 100) + day;
             if ~isnan(altitude)
-            [n_den, Temp] = mexMSIS2_legacy(iyd,UTsec,altitude/1000,latitude,longitude,nan,F10,F10d,ap);
-            % convert from cgs to mks
+                [n_den, Temp] = mexMSIS2_legacy(iyd,UTsec,altitude/1000,latitude,longitude,nan,F10,F10d,ap);
+                % convert from cgs to mks
                 n_den = n_den*1e6;
                 n_den(6) = n_den(6)*1e-3; 
                 rho = n_den(6);
@@ -57,6 +57,7 @@ switch flag_rho
             else
                 n_den = NaN(1,9);
                 Temp = NaN(1,2);
+                rho = NaN;
             end
         end
 
