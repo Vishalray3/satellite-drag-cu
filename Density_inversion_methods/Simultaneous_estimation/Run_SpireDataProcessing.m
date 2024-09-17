@@ -62,7 +62,14 @@ sat_ID_mat(ismember(sat_ID_mat, sat_ids_skip)) = [];
 %% Main loop
 dataset_sat = dataset_sat_mat{1};
 parfor ii = 1:numel(sat_ID_mat)
-    sat_ID = sat_ID_mat{ii}
+    sat_ID = sat_ID_mat{ii};
+    sat_ID
+    run_parfor_loop(month_sat_array, year_data, den_mat_list, sat_ID, flag_rho, dataset_sat, erp_ceres_datafile, data_pod, case_run, del_T, linux_os, output_dir)
+end 
+% toc
+
+
+function run_parfor_loop(month_sat_array, year_data, den_mat_list, sat_ID, flag_rho, dataset_sat, erp_ceres_datafile, data_pod, case_run, del_T, linux_os, output_dir)
     for month_data = month_sat_array
         month_data
         day_sat_array = [1:eomday(year_data, month_data)];
@@ -87,8 +94,7 @@ parfor ii = 1:numel(sat_ID_mat)
             end
         end
     end 
-end 
-% toc
+end
 
 function [] = run_ODcode(dir_data,sat_ID, date_curr, flag_rho, dataset_sat, hasdm_mat, erp_ceres_datafile, data_pod, case_run, del_T, linux_os, output_dir)
 Main_simulStudy
