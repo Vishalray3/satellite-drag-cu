@@ -40,7 +40,7 @@ flag_rho = 'MSIS20';
 erp_ceres_datafile = 'CERES_EBAF_Ed4.2_Subset_202202-202202.nc';
 case_run = 'EDR';
 del_T = 1;
-sat_ids_skip = {};
+sat_ids_skip = {'FM088', 'FM084', 'FM085', 'FM087', 'FM088', 'FM099', 'FM100', 'FM102', 'FM103', 'FM104'};
 %% Hasdm initialize
 den_mat_list = cell(1, numel(hasdm_models));
 
