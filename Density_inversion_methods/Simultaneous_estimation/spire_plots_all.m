@@ -31,10 +31,10 @@ parfor ii = 1:numel(sat_ID_mat)
     sat_id = sat_ID_mat{ii};
     file_names_idx = find(contains(file_names_all, sat_id));
     file_names = file_names_all(file_names_idx);
-    plot_spire_figures(sat_id, file_names, output_dir)
+    plot_spire_figures(sat_id, file_names, output_dir, fig_path, year_data)
 end
 
-function plot_spire_figures(sat_id, file_names, output_dir)
+function plot_spire_figures(sat_id, file_names, output_dir, fig_path, year_data)
     rho_data_all = [];
     rho_nom_all = [];
     rho_hasdm_all = [];
