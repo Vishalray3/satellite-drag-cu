@@ -27,7 +27,8 @@ sat_ID_mat(ismember(sat_ID_mat, sat_ids_skip)) = [];
 
 %% Run the loop
 
-for sat_id = sat_ID_mat
+for sat_id_cell = sat_ID_mat
+    sat_id = sat_id_cell{1};
     rho_data_all = [];
     rho_nom_all = [];
     rho_hasdm_all = [];
