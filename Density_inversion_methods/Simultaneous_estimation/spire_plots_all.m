@@ -27,18 +27,18 @@ sat_ID_mat(ismember(sat_ID_mat, sat_ids_skip)) = [];
 
 %% Run the loop
 
-parfor sat_id_cell = sat_ID_mat
-    sat_id = sat_id_cell{1}
-    plot_spire_figures(sat_id)
+parfor ii = 1:numel(sat_ID_mat)
+    sat_id = sat_ID_mat{ii};
+    file_names_idx = find(contains(file_names_all, sat_id));
+    file_names = file_names_all(file_names_idx);
+    plot_spire_figures(sat_id, file_names, output_dir)
 end
 
-function plot_spire_figures(sat_id)
-rho_data_all = [];
+function plot_spire_figures(sat_id, file_names, output_dir)
+    rho_data_all = [];
     rho_nom_all = [];
     rho_hasdm_all = [];
     time_rho_all = [];
-    file_names_idx = find(contains(file_names_all, sat_id));
-    file_names = file_names_all(file_names_idx);
     for ii=1:numel(file_names)
         load(fullfile(output_dir, file_names{ii}))
         rho_hasdm_all = [rho_hasdm_all, rho_hasdm_eff];
