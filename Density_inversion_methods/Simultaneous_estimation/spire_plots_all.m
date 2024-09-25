@@ -12,17 +12,17 @@ fig_path = fullfile(output_dir, 'figures');
 %% User inputs
 
 
-sat_ids_skip = [];
-year = "2022";
+sat_ids_skip = {};
+year_data = 2022;
 %%
 dir_struct = dir(output_dir);
 dir_name = {dir_struct.name};
 data_pattern = "results_cdpanel_spire_satellite_data_FM" + digitsPattern(3) + '_' + digitsPattern(4) + '_' + digitsPattern(2) + '_' + digitsPattern(2) + '.mat';
 
-file_names = dir_name(matches(dir_name, data_pattern));
+file_names_all = dir_name(matches(dir_name, data_pattern));
 
-sat_ID_mat = unique(extractBetween(file_names, strcat('data', data_pod, '_'),  strcat('_', sprintf('%d', year_data)))); %  %
-dataset_sat_mat = extractBefore(file_names, '_satellite');
+sat_ID_mat = unique(extractBetween(file_names_all, strcat('data', data_pod, '_'),  strcat('_', sprintf('%d', year_data)))); %  %
+dataset_sat_mat = extractBefore(file_names_all, '_satellite');
 sat_ID_mat(ismember(sat_ID_mat, sat_ids_skip)) = [];
 
 %% Run the loop
@@ -32,7 +32,8 @@ for sat_id = sat_ID_mat
     rho_nom_all = [];
     rho_hasdm_all = [];
     time_rho_all = [];
-
+    file_names_idx = find(contains(file_names_all, sat_id));
+    file_names = file_names_all(file_names_idx);
     for ii=1:numel(file_names)
         load(fullfile(output_dir, file_names{ii}))
         rho_hasdm_all = [rho_hasdm_all, rho_hasdm_eff];
@@ -82,7 +83,7 @@ for sat_id = sat_ID_mat
     ylabel('Density ($kg/m^3$)','Interpreter','latex')
     title('90-minute arc-length')
     set(gca,'FontSize',14)
-    saveas(gcf, fullfile(fig_path, strcat('spire_', year, '_', sat_id, '_density_edr.png')))    
+    saveas(gcf, fullfile(fig_path, strcat('spire_', sprintf('%d', year_data), '_', sat_id, '_density_edr.png')))    
 
     figure(2)
     subplot(3,1,1)
@@ -112,5 +113,5 @@ for sat_id = sat_ID_mat
     legend('MSIS00/HASDM','Spire-EDR/HASDM')
     set(gca,'FontSize',14)
     legend(sprintf('MSIS00/HASDM, mean=%0.2f, rms=%0.2f', nom_mean(3), nom_rms(3)),sprintf('Spire-EDR/HASDM, mean=%0.2f, rms=%0.2f', data_mean(3), data_rms(3)))  
-    saveas(gcf, fullfile(fig_path, strcat('spire_', year, '_', sat_id, '_density_edr_ratio.png')))
+    saveas(gcf, fullfile(fig_path, strcat('spire_', sprintf('%d', year_data), '_', sat_id, '_density_edr_ratio.png')))
 end
