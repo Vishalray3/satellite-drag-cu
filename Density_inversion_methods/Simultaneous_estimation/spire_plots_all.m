@@ -27,7 +27,8 @@ sat_ID_mat(ismember(sat_ID_mat, sat_ids_skip)) = [];
 
 %% Run the loop
 
-parfor ii = 1:numel(sat_ID_mat)
+sat_id_mat = {"FM116"};
+for ii = 1:numel(sat_ID_mat)
     sat_id = sat_ID_mat{ii};
     file_names_idx = find(contains(file_names_all, sat_id));
     file_names = file_names_all(file_names_idx);
@@ -60,20 +61,20 @@ function plot_spire_figures(sat_id, file_names, output_dir, fig_path, year_data)
 
     figure(1)
     subplot(3,1,1)
-    plot(time_rho_all(1,:),rho_data_all(1,:),'g.','LineWidth',1)
+    plot(time_rho_all(1,:),rho_data_all(1,:),'g.','LineWidth',0.5)
     hold on
-    plot(time_rho_all(1,:),rho_nom_all(1,:),'r.','LineWidth',1)
-    plot(time_rho_all(1,:),rho_hasdm_all(1,:),'k.','LineWidth',1)
+    plot(time_rho_all(1,:),rho_nom_all(1,:),'r.','LineWidth',0.5)
+    plot(time_rho_all(1,:),rho_hasdm_all(1,:),'k.','LineWidth',0.5)
     grid on
     title('30-minute arc-length')
     legend('Spire EDR','MSIS00','HASDM')
     set(gca,'FontSize',14)
 
     subplot(3,1,2)
-    plot(time_rho_all(2,:),rho_data_all(2,:),'g.','LineWidth',1)
+    plot(time_rho_all(2,:),rho_data_all(2,:),'g.','LineWidth',0.5)
     hold on
-    plot(time_rho_all(2,:),rho_nom_all(2,:),'r.','LineWidth',1)
-    plot(time_rho_all(2,:),rho_hasdm_all(2,:),'k.','LineWidth',1)
+    plot(time_rho_all(2,:),rho_nom_all(2,:),'r.','LineWidth',0.5)
+    plot(time_rho_all(2,:),rho_hasdm_all(2,:),'k.','LineWidth',0.5)
     
     grid on
     ylabel('Density ($kg/m^3$)','Interpreter','latex')
@@ -81,10 +82,10 @@ function plot_spire_figures(sat_id, file_names, output_dir, fig_path, year_data)
     set(gca,'FontSize',14)
 
     subplot(3,1,3)
-    plot(time_rho_all(3,:),rho_data_all(3,:),'g.','LineWidth',1)
+    plot(time_rho_all(3,:),rho_data_all(3,:),'g.','LineWidth',0.5)
     hold on
-    plot(time_rho_all(3,:),rho_nom_all(3,:),'r.','LineWidth',1)
-    plot(time_rho_all(3,:),rho_hasdm_all(3,:),'k.','LineWidth',1)
+    plot(time_rho_all(3,:),rho_nom_all(3,:),'r.','LineWidth',0.5)
+    plot(time_rho_all(3,:),rho_hasdm_all(3,:),'k.','LineWidth',0.5)
     
     grid on
     ylabel('Density ($kg/m^3$)','Interpreter','latex')
@@ -94,27 +95,27 @@ function plot_spire_figures(sat_id, file_names, output_dir, fig_path, year_data)
 
     figure(2)
     subplot(3,1,1)
-    plot(time_rho_all(1,:), nom_ratio(1,:),'k.','LineWidth',1)
+    plot(time_rho_all(1,:), nom_ratio(1,:),'k.','LineWidth',0.5)
     hold on
-    plot(time_rho_all(1,:), data_ratio(1,:),'r.','LineWidth',1)
+    plot(time_rho_all(1,:), data_ratio(1,:),'r.','LineWidth',0.5)
     grid on
     title('30-minute arc-length')
     legend(sprintf('MSIS00/HASDM, mean=%0.2f, rms=%0.2f', nom_mean(1), nom_rms(1)),sprintf('Spire-EDR/HASDM, mean=%0.2f, rms=%0.2f', data_mean(1), data_rms(1)))
     set(gca,'FontSize',14)
 
     subplot(3,1,2)
-    plot(time_rho_all(2,:), nom_ratio(2,:),'k.','LineWidth',1)
+    plot(time_rho_all(2,:), nom_ratio(2,:),'k.','LineWidth',0.5)
     hold on
-    plot(time_rho_all(2,:), data_ratio(2,:),'r.','LineWidth',1)
+    plot(time_rho_all(2,:), data_ratio(2,:),'r.','LineWidth',0.5)
     grid on
     title('60-minute arc-length')
     legend(sprintf('MSIS00/HASDM, mean=%0.2f, rms=%0.2f', nom_mean(2), nom_rms(2)),sprintf('Spire-EDR/HASDM, mean=%0.2f, rms=%0.2f', data_mean(2), data_rms(2)))
     set(gca,'FontSize',14)
 
     subplot(3,1,3)
-    plot(time_rho_all(3,:), nom_ratio(3,:),'k.','LineWidth',1)
+    plot(time_rho_all(3,:), nom_ratio(3,:),'k.','LineWidth',0.5)
     hold on
-    plot(time_rho_all(3,:), data_ratio(3,:),'r.','LineWidth',1)
+    plot(time_rho_all(3,:), data_ratio(3,:),'r.','LineWidth',0.5)
     grid on
     title('90-minute arc-length')
     legend('MSIS00/HASDM','Spire-EDR/HASDM')
