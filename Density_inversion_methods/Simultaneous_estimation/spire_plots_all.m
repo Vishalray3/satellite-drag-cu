@@ -60,30 +60,32 @@ function plot_spire_figures(sat_id, file_names, output_dir, fig_path, year_data)
 
     figure(1)
     subplot(3,1,1)
-    plot(time_rho_all(1,:),rho_hasdm_all(1,:),'k.','LineWidth',1)
+    plot(time_rho_all(1,:),rho_data_all(1,:),'g.','LineWidth',1)
     hold on
     plot(time_rho_all(1,:),rho_nom_all(1,:),'r.','LineWidth',1)
-    plot(time_rho_all(1,:),rho_data_all(1,:),'g.','LineWidth',1)
+    plot(time_rho_all(1,:),rho_hasdm_all(1,:),'k.','LineWidth',1)
     grid on
     title('30-minute arc-length')
-    legend('HASDM','MSIS00','Spire EDR')
+    legend('Spire EDR','MSIS00','HASDM')
     set(gca,'FontSize',14)
 
     subplot(3,1,2)
-    plot(time_rho_all(2,:),rho_hasdm_all(2,:),'k.','LineWidth',1)
+    plot(time_rho_all(2,:),rho_data_all(2,:),'g.','LineWidth',1)
     hold on
     plot(time_rho_all(2,:),rho_nom_all(2,:),'r.','LineWidth',1)
-    plot(time_rho_all(2,:),rho_data_all(2,:),'g.','LineWidth',1)
+    plot(time_rho_all(2,:),rho_hasdm_all(2,:),'k.','LineWidth',1)
+    
     grid on
     ylabel('Density ($kg/m^3$)','Interpreter','latex')
     title('60-minute arc-length')
     set(gca,'FontSize',14)
 
     subplot(3,1,3)
-    plot(time_rho_all(3,:),rho_hasdm_all(3,:),'k.','LineWidth',1)
+    plot(time_rho_all(3,:),rho_data_all(3,:),'g.','LineWidth',1)
     hold on
     plot(time_rho_all(3,:),rho_nom_all(3,:),'r.','LineWidth',1)
-    plot(time_rho_all(3,:),rho_data_all(3,:),'g.','LineWidth',1)
+    plot(time_rho_all(3,:),rho_hasdm_all(3,:),'k.','LineWidth',1)
+    
     grid on
     ylabel('Density ($kg/m^3$)','Interpreter','latex')
     title('90-minute arc-length')
